@@ -1,0 +1,34 @@
+// Neon PostgreSQL for production-ready hosting
+// Mirrors a minimal log of analyses and recommendations
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+model Analysis {
+  id         Int      @id @default(autoincrement())
+  createdAt  DateTime @default(now())
+  text       String
+  sentiment  String   // e.g., positive | neutral | negative
+  mood       String   // e.g., happy | calm | melancholic
+  imagePath  String?  // optional stored path
+  recommendations Recommendation[]
+}
+
+model Recommendation {
+  id         Int      @id @default(autoincrement())
+  createdAt  DateTime @default(now())
+  mood       String
+  query      String   // Track query sent to API
+  title      String?
+  artist     String?
+  url        String?  // download or preview url
+  analysis   Analysis? @relation(fields: [analysisId], references: [id])
+  analysisId Int?
+}
